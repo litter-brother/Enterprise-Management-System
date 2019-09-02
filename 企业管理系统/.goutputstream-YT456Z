@@ -1,0 +1,104 @@
+#include <iostream>
+#include <string.h>
+#include "Department.h"
+
+using namespace std;
+
+Department::Department(string name)
+{
+    int arr[2] = {};
+    fstream fs("id.txt",ios::in);
+    if(!fs.good())
+    {
+    	arr[0]=101;arr[1]=1001;
+    }
+    else
+    {
+		fs>>arr[0];fs>>arr[1];
+		fs.close();
+    }
+    m_strName = name;
+    m_nid = arr[0];
+    arr[0]++;
+    fstream fs1("id.txt",ios::out|ios::trunc);
+    fs1<<arr[0];fs1<<' ';fs1<<arr[1];
+    fs1.close();
+}
+Department::Department(int id,string name,vector<Employee> employees)
+{
+    m_nid = id;
+    m_strName = name;
+    m_vecEmps = employees;
+}
+bool Department::deleteEmp(int id)
+{
+    vector<Employee>::iterator begin = m_vecEmps.begin();
+    for(begin;begin<m_vecEmps.end();begin++)
+    {
+        if((*begin).get_id() == id)
+        {
+            m_vecEmps.erase(begin);
+            return true;
+        }
+    }
+    return false;
+}
+void Department::listEmp(void)
+{
+    vector<Employee>::iterator begin = m_vecEmps.begin();
+    for(begin;begin<m_vecEmps.end();begin++)
+    {
+        string sex;
+        if((*begin).get_gender())
+        {
+            sex = "man";
+        }
+        else
+        {
+            sex = "woman";
+        }
+        
+        cout<<"id:"<<(*begin).get_id()<<'-'<<"gender:"<<sex<<'-'<<"name:"<<(*begin).get_name()<<'-'<<"age:"<<(*begin).get_age()<<endl;
+    }
+}
+
+void Department::save_dep(void)
+{
+    fstream fs("massage.bin",ios::out|ios::binary|ios::app);
+    fs<<m_nid; fs<<' '; fs<<m_strName; fs<<' '; fs<<(m_vecEmps.size()); fs<<'\n';
+    fs.close();
+    vector<Employee>::iterator begin = m_vecEmps.begin();
+    for(begin;begin<m_vecEmps.end();begin++)
+    {
+        (*begin).save_emp();
+    }
+}
+int Department::get_did(void)
+{
+    return m_nid;
+}
+string Department::get_dname(void)
+{
+    return m_strName;
+}
+vector<Employee> Department::get_demp(void)
+{
+    return m_vecEmps;
+}
+void Department::addEmp(Employee emp)
+{
+    m_vecEmps.push_back(emp);
+}
+bool Department::delEmp(int empid)
+{
+    vector<Employee>::iterator begin = m_vecEmps.begin();
+    for(begin;begin<m_vecEmps.end();begin++)
+    {
+        if((*begin).get_id() == empid)
+        {
+            m_vecEmps.erase(begin);
+            return true;
+        }
+    }
+    return false;
+}
